@@ -6,7 +6,6 @@ import { useCart } from "@/context/CartContext";
 
 interface ProductCardProps {
     id: number;
-    imagen: string;
     nombre: string;
     descripcion: string;
     precio: number;
@@ -16,7 +15,6 @@ interface ProductCardProps {
 
 export default function ProductCard({
     id,
-    imagen,
     nombre,
     descripcion,
     precio,
@@ -28,15 +26,14 @@ export default function ProductCard({
 
     const badgeClasses =
         badgeType === 'best-seller'
-            ? "bg-primary text-slate-900"
-            : "bg-white/90 text-slate-800 backdrop-blur-sm";
+            ? "bg-primary text-slate-900 shadow-sm"
+            : "bg-white/90 dark:bg-slate-800/90 text-slate-800 dark:text-slate-200 backdrop-blur-sm shadow-sm";
 
     const handleAdd = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
         addToCart({
             id,
-            image: imagen,
             title: nombre,
             description: descripcion,
             price: precio
@@ -44,8 +41,8 @@ export default function ProductCard({
     };
 
     return (
-        <div className="group flex flex-col h-full bg-white rounded-2xl transition-all hover:shadow-xl hover:-translate-y-1 overflow-hidden relative border border-slate-100">
-            <div className="relative aspect-video w-full bg-slate-50 shrink-0 overflow-hidden">
+        <div className="group flex flex-col h-full bg-white dark:bg-slate-800 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-hidden relative border border-slate-100 dark:border-slate-700">
+            <div className="relative aspect-video w-full bg-slate-50 dark:bg-slate-900 shrink-0 overflow-hidden">
                 <Image
                     fill
                     alt={nombre}
@@ -63,19 +60,19 @@ export default function ProductCard({
             </div>
             <div className="flex flex-col grow p-4">
                 <div className="flex flex-col mb-2">
-                    <h3 className="text-base font-bold text-slate-900 group-hover:text-primary transition-colors line-clamp-2 mb-0.5">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-2 mb-0.5">
                         {nombre}
                     </h3>
                     <p className="text-lg font-black text-primary">
                         ${precio.toLocaleString('es-AR')}
                     </p>
                 </div>
-                <p className="text-sm text-slate-500 line-clamp-2 mb-4">
+                <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-4">
                     {descripcion || "Sin descripción disponible."}
                 </p>
 
                 {isAdded ? (
-                    <div className="mt-auto w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm border border-slate-200 cursor-default">
+                    <div className="mt-auto w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-sm border border-slate-200 dark:border-slate-600 cursor-default transition-colors">
                         <span className="material-symbols-outlined text-[20px]">check_circle</span>
                         <span>Ya en la lista</span>
                     </div>

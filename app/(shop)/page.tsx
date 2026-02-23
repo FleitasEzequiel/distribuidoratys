@@ -6,7 +6,7 @@ import Aside from "@/components/LandingPage/Aside"
 
 export default function Home() {
   return (
-    <div className="bg-background-light text-slate-900 font-display antialiased min-h-screen flex flex-col">
+    <div className="bg-background text-foreground dark:bg-slate-900 font-display antialiased min-h-screen flex flex-col transition-colors duration-300">
       <HeroSection />
       <CompetenceSection />
       <Aside>

@@ -4,22 +4,37 @@
 /* @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap'); */
 
 :root {
-  --background: #f6f7f8;
+  --background: #ffffff;
   --foreground: #0f172a;
+  --card-background: #ffffff;
+  --border-color: #e2e8f0;
+}
+
+:root.dark {
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --card-background: #1e293b;
+  --border-color: #334155;
 }
 
 @theme {
   --color-primary: #1764bb;
   --color-secondary: #dcfce7;
-  --color-background-light: #f6f7f8;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card-background);
+  --color-border: var(--border-color);
   --font-display: 'Inter', sans-serif;
   --font-serif: 'Playfair Display', serif;
   --font-sans: 'Inter', sans-serif;
   --font-manrope: 'Manrope', sans-serif;
 }
 
+@variant dark (&:where(.dark, .dark *));
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
