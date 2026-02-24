@@ -17,7 +17,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 
 export const metadata: Metadata = {
   title: "Distribuidora TyS | Calidad para tu hogar",
-  description: "Encuentra la mejor vajilla y equipamiento gastronómico.",
+  description: "Pide los mejores productos desde Mayor Villafañe, con envíos a todo Formosa.",
 };
 
 export default function RootLayout({

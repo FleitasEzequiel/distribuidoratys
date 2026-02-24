@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { CATEGORIES } from "@/lib/constants";
 
 interface EditProductFormProps {
     product?: {
@@ -22,9 +23,17 @@ export const EditProductForm: React.FC<EditProductFormProps> = ({ product, isNew
 
     useEffect(() => {
         if (product) {
+            // Extraer el ID de categoría de forma segura
+            let currentCatId = CATEGORIES[1].id;
+            if (typeof product.categoria === 'object' && product.categoria !== null) {
+                currentCatId = (product.categoria as any).id;
+            } else if (product.categoria) {
+                currentCatId = Number(product.categoria);
+            }
+
             setFormData({
                 nombre: product.nombre || "",
-                categoria: product.categoria || "disinfectants",
+                categoria: currentCatId,
                 precio: product.precio || 0,
                 descripcion: product.descripcion || "",
                 imagen: product.imagen || ""
@@ -45,10 +54,19 @@ export const EditProductForm: React.FC<EditProductFormProps> = ({ product, isNew
         };
 
         const key = keyMap[id] || id;
+        let finalValue: any = value;
+
+        if (id === 'price') {
+            finalValue = value === "" ? 0 : parseFloat(value);
+            if (isNaN(finalValue)) finalValue = 0;
+        } else if (id === 'category') {
+            finalValue = Number(value);
+            if (isNaN(finalValue)) finalValue = CATEGORIES[1].id;
+        }
 
         setFormData((prev: any) => ({
             ...prev,
-            [key]: id === 'price' ? parseFloat(value) : value
+            [key]: finalValue
         }));
     };
 
@@ -121,7 +139,7 @@ export const EditProductForm: React.FC<EditProductFormProps> = ({ product, isNew
                             <div className="flex flex-col gap-1.5">
                                 <label className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400" htmlFor="product-name">Nombre del Producto</label>
                                 <input
-                                    className="block w-full rounded-lg border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 focus:border-[#3994ef] focus:ring-[#3994ef] dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-[#3994ef]"
+                                    className="block w-full rounded-lg border-slate-300 bg-white px-4 py-2 text-sm text-slate-900 shadow-sm focus:border-[#3994ef] focus:ring-1 focus:ring-[#3994ef] dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-[#3994ef]"
                                     id="product-name"
                                     type="text"
                                     required
@@ -132,21 +150,20 @@ export const EditProductForm: React.FC<EditProductFormProps> = ({ product, isNew
                             <div className="flex flex-col gap-1.5">
                                 <label className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400" htmlFor="category">Categoría</label>
                                 <select
-                                    className="block w-full rounded-lg border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 focus:border-[#3994ef] focus:ring-[#3994ef] dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-[#3994ef]"
+                                    className="block w-full rounded-lg border-slate-300 bg-white px-4 py-2 text-sm text-slate-900 shadow-sm focus:border-[#3994ef] focus:ring-1 focus:ring-[#3994ef] dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-[#3994ef]"
                                     id="category"
                                     value={formData.categoria}
                                     onChange={handleChange}
                                 >
-                                    <option value="disinfectants">Desinfectantes</option>
-                                    <option value="tools">Herramientas</option>
-                                    <option value="equipment">Equipamiento</option>
-                                    <option value="safety">Seguridad</option>
+                                    {CATEGORIES.filter(c => c.id !== 0).map(cat => (
+                                        <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+                                    ))}
                                 </select>
                             </div>
                             <div className="flex flex-col gap-1.5">
                                 <label className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400" htmlFor="price">Precio ($)</label>
                                 <input
-                                    className="block w-full rounded-lg border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 focus:border-[#3994ef] focus:ring-[#3994ef] dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-[#3994ef]"
+                                    className="block w-full rounded-lg border-slate-300 bg-white px-4 py-2 text-sm text-slate-900 shadow-sm focus:border-[#3994ef] focus:ring-1 focus:ring-[#3994ef] dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-[#3994ef]"
                                     id="price"
                                     placeholder="0.00"
                                     step="0.01"
@@ -160,7 +177,7 @@ export const EditProductForm: React.FC<EditProductFormProps> = ({ product, isNew
                         <div className="flex flex-col gap-1.5">
                             <label className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400" htmlFor="description">Descripción</label>
                             <textarea
-                                className="block w-full rounded-lg border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 focus:border-[#3994ef] focus:ring-[#3994ef] dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-[#3994ef]"
+                                className="block w-full rounded-lg border-slate-300 bg-white px-4 py-2 text-sm text-slate-900 shadow-sm focus:border-[#3994ef] focus:ring-1 focus:ring-[#3994ef] dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-[#3994ef]"
                                 id="description"
                                 rows={3}
                                 value={formData.descripcion}
@@ -170,13 +187,13 @@ export const EditProductForm: React.FC<EditProductFormProps> = ({ product, isNew
                         <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
                             <button
                                 onClick={onCancel}
-                                className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800"
                                 type="button"
                             >
                                 Cancelar
                             </button>
                             <button
-                                className="rounded-lg bg-[#3994ef] px-6 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#3994ef]/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3994ef]"
+                                className="rounded-lg bg-[#3994ef] px-6 py-2 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#3994ef]/90 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3994ef]"
                                 type="submit"
                             >
                                 {isNew ? "Crear Producto" : "Guardar Cambios"}

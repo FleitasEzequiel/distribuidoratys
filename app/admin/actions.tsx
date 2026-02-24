@@ -32,7 +32,7 @@ async function uploadImage(file: File, id: string) {
 export async function editarProducto(id: string, formData: FormData) {
     const nuevosDatos: any = {
         nombre: formData.get('nombre'),
-        categoria_id: 1,
+        categoria_id: Number(formData.get('categoria')),
         precio: parseFloat(formData.get('precio') as string),
         descripcion: formData.get('descripcion'),
 
@@ -65,7 +65,7 @@ export async function crearProducto(formData: FormData) {
 
     const initialData: any = {
         nombre: formData.get('nombre'),
-        categoria_id: 1,
+        categoria_id: Number(formData.get('categoria')),
         precio: parseFloat(formData.get('precio') as string),
         descripcion: formData.get('descripcion'),
     };

@@ -20,7 +20,7 @@ const CompetenceSection = () => (<section className="py-12 bg-background dark:bg
                 <div className="size-12 rounded-full bg-secondary dark:bg-primary/20 text-primary flex items-center justify-center mb-4">
                     <span className="material-symbols-outlined">local_shipping</span>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Envíos a todo el país</h3>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Envíos a toda la provincia</h3>
                 <p className="text-slate-500 dark:text-slate-400 text-sm">Llegamos a donde estés con la mayor seguridad y rapidez.</p>
             </div>
         </div>

@@ -4,12 +4,13 @@ import React, { useState } from "react";
 import { AdminProductRow } from "./AdminProductRow";
 import { EditProductForm } from "./EditProductForm";
 import { editarProducto, crearProducto, eliminarProducto } from "@/app/admin/actions";
+import { CATEGORIES } from "@/lib/constants";
 
 interface AdminInventoryProps {
     initialProducts: any[];
 }
 
-export const AdminInventory: React.FC<AdminInventoryProps> = ({ initialProducts }) => {
+export const AdminInventory: React.FC<AdminInventoryProps> = ({ initialProducts }: { initialProducts: any[] }) => {
     const [editingProduct, setEditingProduct] = useState<any>(null);
     const [isCreating, setIsCreating] = useState(false);
 
@@ -22,7 +23,7 @@ export const AdminInventory: React.FC<AdminInventoryProps> = ({ initialProducts 
     const handleAddNew = () => {
         setEditingProduct({
             nombre: "",
-            categoria: "disinfectants",
+            categoria: CATEGORIES[1].id,
             precio: 0,
             descripcion: "",
             imagen: ""
