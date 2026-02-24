@@ -4,6 +4,7 @@ import fetchCatalog from "@/lib/ProductServices";
 import Aside from "./Aside";
 import ProductList from "./ProductList";
 import Link from "next/link";
+import { CATEGORIES } from "@/lib/constants";
 
 interface Product {
     id: number;
@@ -28,6 +29,22 @@ const CatalogSection = async ({ searchParams }: CatalogSectionProps) => {
         <Suspense fallback={<div>Cargando productos...</div>}>
             <Aside>
                 <section id="catalogo" className="flex-1">
+                    {/* Fila Horizontal de Categorías (Solo Mobile) */}
+                    <div className="md:hidden mb-8 -mx-4 px-4 overflow-x-auto no-scrollbar scroll-smooth flex gap-2 pb-2">
+                        {[...CATEGORIES].sort((a, b) => a.id - b.id).map((cat) => (
+                            <Link
+                                key={cat.id}
+                                href={cat.id === 0 ? "/#catalogo" : `/?cat=${cat.id}#catalogo`}
+                                className={`whitespace-nowrap px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 border ${cat.id === catId
+                                    ? "bg-primary border-primary text-white shadow-md shadow-primary/20 scale-105"
+                                    : "bg-white border-slate-200 text-slate-600 hover:border-primary/50 hover:text-primary dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400"
+                                    }`}
+                            >
+                                {cat.nombre}
+                            </Link>
+                        ))}
+                    </div>
+
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                         <div>
                             <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-1">
@@ -72,8 +89,8 @@ const CatalogSection = async ({ searchParams }: CatalogSectionProps) => {
                                         key={p}
                                         href={`/?cat=${catId}&page=${p}#catalogo`}
                                         className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm transition-colors ${p === page
-                                                ? 'bg-primary text-white'
-                                                : 'hover:bg-slate-100 text-slate-600'
+                                            ? 'bg-primary text-white'
+                                            : 'hover:bg-slate-100 text-slate-600'
                                             }`}
                                     >
                                         {p}

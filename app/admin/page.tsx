@@ -5,8 +5,10 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function AdminPage() {
-    const products = await getProducts();
+export default async function AdminPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+    const searchParams = await props.searchParams;
+    const page = searchParams.page ? Number(searchParams.page) : 1;
+    const products = await getProducts(undefined, page);
 
     return (
         <div className="bg-background dark:bg-slate-900 font-display text-slate-900 dark:text-slate-100 antialiased transition-colors duration-200 min-h-screen">
@@ -33,7 +35,12 @@ export default async function AdminPage() {
 
                 {/* Main Content */}
                 <main className="mx-auto w-full max-w-7xl flex-1 px-6 py-10 lg:px-12">
-                    <AdminInventory initialProducts={products.data || []} />
+                    <AdminInventory
+                        initialProducts={products.data || []}
+                        totalPages={products.totalPages || 1}
+                        currentPage={page}
+                        totalCount={products.count || 0}
+                    />
                 </main>
 
                 {/* Subtle Footer */}

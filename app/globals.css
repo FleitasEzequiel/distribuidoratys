@@ -36,5 +36,19 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+}
+
+/* Transición suave para todos los elementos cuando cambia el tema */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 0.5s;
+  transition-timing-function: ease;
+}
+
+/* Excepto para transformaciones o animaciones específicas que podrían verse afectadas */
+.no-transition {
+  transition: none !important;
 }

@@ -14,10 +14,12 @@ async function uploadImage(file: File, id: string) {
         .from('Distribuidora TyS')
         .upload(filePath, file, {
             upsert: true,
+            cacheControl: "3600",
             contentType: file.type
         });
 
     if (uploadError) {
+        console.log("hubo un error", uploadError)
         console.error("Error uploading image:", uploadError);
         return null;
     }

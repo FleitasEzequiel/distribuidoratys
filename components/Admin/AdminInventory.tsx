@@ -5,12 +5,21 @@ import { AdminProductRow } from "./AdminProductRow";
 import { EditProductForm } from "./EditProductForm";
 import { editarProducto, crearProducto, eliminarProducto } from "@/app/admin/actions";
 import { CATEGORIES } from "@/lib/constants";
+import Link from "next/link";
 
 interface AdminInventoryProps {
     initialProducts: any[];
+    totalPages: number;
+    currentPage: number;
+    totalCount: number;
 }
 
-export const AdminInventory: React.FC<AdminInventoryProps> = ({ initialProducts }: { initialProducts: any[] }) => {
+export const AdminInventory: React.FC<AdminInventoryProps> = ({
+    initialProducts,
+    totalPages,
+    currentPage,
+    totalCount
+}) => {
     const [editingProduct, setEditingProduct] = useState<any>(null);
     const [isCreating, setIsCreating] = useState(false);
 
@@ -125,15 +134,41 @@ export const AdminInventory: React.FC<AdminInventoryProps> = ({ initialProducts 
                 {/* Simple Pagination / Footer */}
                 <div className="flex items-center justify-between border-t border-slate-200 px-6 py-4 dark:border-slate-800">
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                        Mostrando {initialProducts.length} productos
+                        Mostrando {initialProducts.length} de {totalCount} productos
                     </p>
-                    <div className="flex gap-2">
-                        <button className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 text-slate-400 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800">
-                            <span className="material-symbols-outlined text-[18px]">chevron_left</span>
-                        </button>
-                        <button className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 text-slate-400 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800">
-                            <span className="material-symbols-outlined text-[18px]">chevron_right</span>
-                        </button>
+                    <div className="flex items-center gap-2">
+                        {currentPage > 1 && (
+                            <Link
+                                href={`/admin?page=${currentPage - 1}`}
+                                className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                            </Link>
+                        )}
+
+                        <div className="flex items-center gap-1 mx-2">
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                                <Link
+                                    key={p}
+                                    href={`/admin?page=${p}`}
+                                    className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold transition-colors ${p === currentPage
+                                            ? 'bg-[#3994ef] text-white'
+                                            : 'border border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800'
+                                        }`}
+                                >
+                                    {p}
+                                </Link>
+                            ))}
+                        </div>
+
+                        {currentPage < totalPages && (
+                            <Link
+                                href={`/admin?page=${currentPage + 1}`}
+                                className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>

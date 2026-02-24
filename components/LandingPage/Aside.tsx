@@ -26,19 +26,6 @@ const Aside = ({ children }: { children: React.ReactNode; }) => {
                             ))}
                         </ul>
                     </div>
-
-                    <div className="relative overflow-hidden rounded-2xl bg-primary/5 p-6 border border-primary/10 dark:border-primary/20 transition-colors">
-                        <div className="relative z-10">
-                            <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Kit Gastronómico</h4>
-                            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Equipa tu cocina con los mejores implementos.</p>
-                            <button className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white border-b border-slate-900 dark:border-white pb-0.5 hover:text-primary hover:border-primary transition-colors">
-                                Ver más
-                            </button>
-                        </div>
-                        <div className="absolute -bottom-4 -right-4 text-primary/10 dark:text-primary/20">
-                            <span className="material-symbols-outlined text-[120px]">restaurant</span>
-                        </div>
-                    </div>
                 </aside>
                 {children}
             </main>
