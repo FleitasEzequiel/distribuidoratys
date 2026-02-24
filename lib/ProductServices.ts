@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import { cacheTag } from "next/cache";
 const supabase = await createClient();
 
-export const getProducts = async (category?: number, page: number = 1) => {
+export const getProducts = async (category?: number, page: number = 1, searchTerm?: string) => {
     'use cache'
     cacheTag('products-tag')
 
@@ -12,16 +12,19 @@ export const getProducts = async (category?: number, page: number = 1) => {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    let query = supabase
+    let supabaseQuery = supabase
         .from('productos')
         .select('id,nombre,descripcion,precio,categoria (nombre,id)', { count: 'exact' })
-        .range(from, to);
 
     if (category && category !== 0) {
-        query = query.eq('categoria_id', category);
+        supabaseQuery = supabaseQuery.eq('categoria_id', category);
     }
 
-    const { data, error, count } = await query;
+    if (searchTerm && searchTerm.trim() !== "") {
+        supabaseQuery = supabaseQuery.ilike('nombre', `%${searchTerm.trim()}%`);
+    }
+
+    const { data, error, count } = await supabaseQuery.range(from, to);
     if (error) throw new Error('Error al cargar base de datos');
 
     return {

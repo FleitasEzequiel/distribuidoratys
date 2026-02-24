@@ -22,9 +22,10 @@ const CatalogSection = async ({ searchParams }: CatalogSectionProps) => {
     const params = await searchParams;
     const catId = params.cat ? Number(params.cat) : 0;
     const page = params.page ? Number(params.page) : 1;
+    const query = params.q ? String(params.q) : "";
 
-    const { data: Products, totalPages, count } = await fetchCatalog(catId, page);
-
+    const { data: Products, totalPages, count } = await fetchCatalog(catId, page, query);
+    console.log("ACA", totalPages)
     return (
         <Suspense fallback={<div>Cargando productos...</div>}>
             <Aside>
@@ -34,7 +35,10 @@ const CatalogSection = async ({ searchParams }: CatalogSectionProps) => {
                         {[...CATEGORIES].sort((a, b) => a.id - b.id).map((cat) => (
                             <Link
                                 key={cat.id}
-                                href={cat.id === 0 ? "/#catalogo" : `/?cat=${cat.id}#catalogo`}
+                                href={cat.id === 0
+                                    ? `/?${query ? `q=${query}&` : ''}#catalogo`
+                                    : `/?cat=${cat.id}${query ? `&q=${query}` : ''}#catalogo`
+                                }
                                 className={`whitespace-nowrap px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 border ${cat.id === catId
                                     ? "bg-primary border-primary text-white shadow-md shadow-primary/20 scale-105"
                                     : "bg-white border-slate-200 text-slate-600 hover:border-primary/50 hover:text-primary dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400"
@@ -77,7 +81,7 @@ const CatalogSection = async ({ searchParams }: CatalogSectionProps) => {
                             <nav className="flex items-center gap-1">
                                 {page > 1 && (
                                     <Link
-                                        href={`/?cat=${catId}&page=${page - 1}#catalogo`}
+                                        href={`/?cat=${catId}&page=${page - 1}${query ? `&q=${query}` : ''}#catalogo`}
                                         className="p-2 text-slate-600 hover:text-primary transition-colors"
                                     >
                                         <span className="material-symbols-outlined">chevron_left</span>
@@ -87,7 +91,7 @@ const CatalogSection = async ({ searchParams }: CatalogSectionProps) => {
                                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                                     <Link
                                         key={p}
-                                        href={`/?cat=${catId}&page=${p}#catalogo`}
+                                        href={`/?cat=${catId}&page=${p}${query ? `&q=${query}` : ''}#catalogo`}
                                         className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm transition-colors ${p === page
                                             ? 'bg-primary text-white'
                                             : 'hover:bg-slate-100 text-slate-600'
@@ -99,7 +103,7 @@ const CatalogSection = async ({ searchParams }: CatalogSectionProps) => {
 
                                 {page < totalPages && (
                                     <Link
-                                        href={`/?cat=${catId}&page=${page + 1}#catalogo`}
+                                        href={`/?cat=${catId}&page=${page + 1}${query ? `&q=${query}` : ''}#catalogo`}
                                         className="p-2 text-slate-600 hover:text-primary transition-colors"
                                     >
                                         <span className="material-symbols-outlined">chevron_right</span>
