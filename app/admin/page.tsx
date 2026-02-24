@@ -1,15 +1,11 @@
-import React from "react";
+import React, { Suspense } from "react";
 import getProducts from "@/lib/ProductServices";
 import { AdminInventory } from "@/components/Admin/AdminInventory";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function AdminPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
-    const searchParams = await props.searchParams;
-    const page = searchParams.page ? Number(searchParams.page) : 1;
-    const products = await getProducts(undefined, page);
-
+export default function AdminPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
     return (
         <div className="bg-background dark:bg-slate-900 font-display text-slate-900 dark:text-slate-100 antialiased transition-colors duration-200 min-h-screen">
             <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-background dark:bg-slate-900">
@@ -33,14 +29,15 @@ export default async function AdminPage(props: { searchParams: Promise<{ [key: s
                     </div>
                 </header>
 
-                {/* Main Content */}
+                {/* Main Content with Suspense */}
                 <main className="mx-auto w-full max-w-7xl flex-1 px-6 py-10 lg:px-12">
-                    <AdminInventory
-                        initialProducts={products.data || []}
-                        totalPages={products.totalPages || 1}
-                        currentPage={page}
-                        totalCount={products.count || 0}
-                    />
+                    <Suspense fallback={
+                        <div className="flex items-center justify-center py-20">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                        </div>
+                    }>
+                        <AdminContent searchParams={props.searchParams} />
+                    </Suspense>
                 </main>
 
                 {/* Subtle Footer */}
@@ -49,5 +46,20 @@ export default async function AdminPage(props: { searchParams: Promise<{ [key: s
                 </footer>
             </div>
         </div>
+    );
+}
+
+async function AdminContent({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+    const params = await searchParams;
+    const page = params.page ? Number(params.page) : 1;
+    const products = await getProducts(undefined, page);
+
+    return (
+        <AdminInventory
+            initialProducts={products.data || []}
+            totalPages={products.totalPages || 1}
+            currentPage={page}
+            totalCount={products.count || 0}
+        />
     );
 }
