@@ -26,13 +26,6 @@ export default async function AdminPage() {
                         </div>
                         <div className="flex items-center gap-4">
                             <ThemeToggle />
-                            <div className="h-8 w-8 overflow-hidden rounded-full ring-2 ring-slate-100 dark:ring-slate-800">
-                                <img
-                                    alt="User Profile"
-                                    className="h-full w-full object-cover"
-                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhVgtlvPSRQ57G3LulZDAOvVjOr_zTctjyJjyyGPqCKx_-rxgecLmpHFYDA883ROal8M0B8hCZdh4nki0FvSkNbf8ld4zGbGHx-ywn7PEF6FoKJ8DTHKq3_S2RViHtr01Z7cb810XtZdCwvEYiubAPhoGjQPYfaGD5s9bnDuRaanneZ7wVgkrS48kAX6ZHdRhOb00I8NoUkMNepA_pLK2TzqvI4KawKOJMO2eEp4uwcrtox34X1yZZRwifwojNrBGXXeY8NIOKG2s"
-                                />
-                            </div>
                         </div>
                     </div>
                 </header>
@@ -44,7 +37,7 @@ export default async function AdminPage() {
 
                 {/* Subtle Footer */}
                 <footer className="mt-auto py-8 text-center">
-                    <p className="text-[11px] uppercase tracking-widest text-slate-400 dark:text-slate-600">© 2024 Operaciones Cleanventory</p>
+                    <p className="text-[11px] uppercase tracking-widest text-slate-400 dark:text-slate-600">© 2026 Distribuidora TyS</p>
                 </footer>
             </div>
         </div>

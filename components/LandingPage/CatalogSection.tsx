@@ -2,14 +2,44 @@
 import { Suspense } from "react"
 import ProductCard from "@/components/ProductCard"
 import fetchCatalog from "@/lib/ProductServices";
+import { CATEGORIES } from "@/lib/constants";
 
-const CatalogSection = async () => {
-    const Products = await fetchCatalog()
+interface Product {
+    id: number;
+    nombre: string;
+    descripcion: string;
+    precio: number;
+    categoria: { id: number; nombre: string } | { id: number; nombre: string }[];
+}
+
+const CatalogSection = async ({ searchQuery, activeCategoryId }: { searchQuery?: string; activeCategoryId?: number }) => {
+    const allProducts = (await fetchCatalog()) as Product[];
+
+    let Products = allProducts;
+
+    if (searchQuery) {
+        Products = Products?.filter(p =>
+            p.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.descripcion?.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+    }
+
+    if (activeCategoryId && activeCategoryId !== 0) {
+        Products = Products?.filter(p => {
+            const catId = Array.isArray(p.categoria) ? p.categoria[0]?.id : p.categoria?.id;
+            return catId === activeCategoryId;
+        });
+    }
+
+    const activeCategory = CATEGORIES.find(c => c.id === activeCategoryId);
+
     return (
         <section id="catalogo" className="flex-1">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-1">Catálogo de Productos</h1>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-1">
+                        {searchQuery ? `Resultados para "${searchQuery}"` : activeCategory && activeCategoryId !== 0 ? `Categoría: ${activeCategory.nombre}` : 'Catálogo de Productos'}
+                    </h1>
                     <p className="text-slate-500 dark:text-slate-400 text-sm">Mostrando {Products?.length || 0} productos seleccionados</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -30,7 +60,13 @@ const CatalogSection = async () => {
 
             <Suspense fallback={<div>Cargando productos...</div>}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {Products == null ? <h1>No hay productos</h1> : Products.map((product) => (
+                    {(Products == null || Products.length === 0) ? (
+                        <div className="col-span-full py-12 text-center">
+                            <span className="material-symbols-outlined text-6xl text-slate-300 mb-4">search_off</span>
+                            <h2 className="text-xl font-semibold text-slate-600 dark:text-slate-400">No encontramos productos que coincidan</h2>
+                            <p className="text-slate-400">Intenta con otros términos o revisa el catálogo completo.</p>
+                        </div>
+                    ) : Products.map((product) => (
                         <ProductCard
                             key={product.id}
                             {...product}

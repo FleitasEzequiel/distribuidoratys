@@ -8,7 +8,7 @@ export const getProducts = async () => {
     'use cache'
     cacheTag('products-tag') // Asignamos la etiqueta
 
-    const { data, error } = await supabase.from('productos').select('id,nombre,descripcion,precio,categoria (nombre,id)')
+    const { data, error } = await supabase.from('productos').select('id,nombre,descripcion,precio,categoria (nombre,id)').limit(24)
     console.log(error)
     if (error) throw new Error('Error al cargar base de datos de terceros')
 
