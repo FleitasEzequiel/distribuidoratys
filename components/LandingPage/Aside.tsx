@@ -1,10 +1,9 @@
 'use client'
 import Link from "next/link";
-import { CATEGORIES } from "@/lib/constants";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
-const Aside = ({ children }: { children: React.ReactNode; }) => {
+const Aside = ({ children, categories }: { children: React.ReactNode; categories: { id: number; nombre: string }[] }) => {
     const searchParams = useSearchParams()
     const urlCat = Number(searchParams.get('cat'))
     return (
@@ -13,8 +12,8 @@ const Aside = ({ children }: { children: React.ReactNode; }) => {
                 <aside className="w-full md:w-64 shrink-0 space-y-8 hidden md:block sticky top-24 h-fit">
                     <div>
                         <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4">Categorías</h3>
-                        <ul className="space-y-2">
-                            {[...CATEGORIES].sort((a, b) => a.id - b.id).map((cat) => {
+                        <ul className="space-y-2 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                            {categories.map((cat) => {
                                 const query = searchParams.get('q');
                                 const href = cat.id === 0
                                     ? `/?${query ? `q=${query}&` : ''}#catalogo`

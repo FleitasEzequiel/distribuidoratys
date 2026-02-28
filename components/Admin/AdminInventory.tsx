@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { AdminProductRow } from "./AdminProductRow";
 import { EditProductForm } from "./EditProductForm";
 import { editarProducto, crearProducto, eliminarProducto } from "@/app/admin/actions";
-import { CATEGORIES } from "@/lib/constants";
 import Link from "next/link";
 
 interface AdminInventoryProps {
@@ -12,13 +11,15 @@ interface AdminInventoryProps {
     totalPages: number;
     currentPage: number;
     totalCount: number;
+    categories: { id: number; nombre: string }[];
 }
 
 export const AdminInventory: React.FC<AdminInventoryProps> = ({
     initialProducts,
     totalPages,
     currentPage,
-    totalCount
+    totalCount,
+    categories
 }) => {
     const [editingProduct, setEditingProduct] = useState<any>(null);
     const [isCreating, setIsCreating] = useState(false);
@@ -32,7 +33,7 @@ export const AdminInventory: React.FC<AdminInventoryProps> = ({
     const handleAddNew = () => {
         setEditingProduct({
             nombre: "",
-            categoria: CATEGORIES[1].id,
+            categoria: categories.length > 1 ? categories[1].id : 0,
             precio: 0,
             descripcion: "",
             imagen: ""
@@ -104,6 +105,7 @@ export const AdminInventory: React.FC<AdminInventoryProps> = ({
                     isNew={isCreating}
                     onCancel={handleCancel}
                     onSave={handleSave}
+                    categories={categories}
                 />
             )}
 
@@ -152,8 +154,8 @@ export const AdminInventory: React.FC<AdminInventoryProps> = ({
                                     key={p}
                                     href={`/admin?page=${p}`}
                                     className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold transition-colors ${p === currentPage
-                                            ? 'bg-[#3994ef] text-white'
-                                            : 'border border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800'
+                                        ? 'bg-[#3994ef] text-white'
+                                        : 'border border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800'
                                         }`}
                                 >
                                     {p}

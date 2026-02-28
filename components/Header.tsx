@@ -31,6 +31,7 @@ function HeaderContent() {
         } else {
             params.delete('q');
         }
+        params.delete('page');
         setIsSearchOpen(false);
         router.push(`/?${params.toString()}#catalogo`);
     };
@@ -123,6 +124,7 @@ function HeaderContent() {
                                         setSearchTerm(tag);
                                         const params = new URLSearchParams(searchParams.toString());
                                         params.set('q', tag);
+                                        params.delete('page');
                                         setIsSearchOpen(false);
                                         router.push(`/?${params.toString()}#catalogo`);
                                     }}

@@ -1,11 +1,14 @@
 import React, { Suspense } from "react";
-import getProducts from "@/lib/ProductServices";
+import getProducts, { getCategorias } from "@/lib/ProductServices";
 import { AdminInventory } from "@/components/Admin/AdminInventory";
+import { AdminFilters } from "@/components/Admin/AdminFilters";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function AdminPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+export default async function AdminPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+    const { data: categories } = await getCategorias();
+
     return (
         <div className="bg-background dark:bg-slate-900 font-display text-slate-900 dark:text-slate-100 antialiased transition-colors duration-200 min-h-screen">
             <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-background dark:bg-slate-900">
@@ -31,12 +34,15 @@ export default function AdminPage(props: { searchParams: Promise<{ [key: string]
 
                 {/* Main Content with Suspense */}
                 <main className="mx-auto w-full max-w-7xl flex-1 px-6 py-10 lg:px-12">
+                    <Suspense fallback={<div className="h-14 mb-6"></div>}>
+                        <AdminFilters categories={categories} />
+                    </Suspense>
                     <Suspense fallback={
                         <div className="flex items-center justify-center py-20">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3994ef]"></div>
                         </div>
                     }>
-                        <AdminContent searchParams={props.searchParams} />
+                        <AdminContent searchParams={props.searchParams} categories={categories} />
                     </Suspense>
                 </main>
 
@@ -49,10 +55,13 @@ export default function AdminPage(props: { searchParams: Promise<{ [key: string]
     );
 }
 
-async function AdminContent({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+async function AdminContent({ searchParams, categories }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }>, categories: { id: number; nombre: string }[] }) {
     const params = await searchParams;
     const page = params.page ? Number(params.page) : 1;
-    const products = await getProducts(undefined, page);
+    const category = params.categoria ? Number(params.categoria) : undefined;
+    const search = params.search ? String(params.search) : undefined;
+
+    const products = await getProducts(category, page, search);
 
     return (
         <AdminInventory
@@ -60,6 +69,7 @@ async function AdminContent({ searchParams }: { searchParams: Promise<{ [key: st
             totalPages={products.totalPages || 1}
             currentPage={page}
             totalCount={products.count || 0}
+            categories={categories}
         />
     );
 }

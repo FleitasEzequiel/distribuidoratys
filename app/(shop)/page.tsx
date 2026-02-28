@@ -7,8 +7,6 @@ import { Suspense } from "react";
 export default function Home(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   return (
     <div className="bg-background text-foreground dark:bg-slate-900 font-display antialiased min-h-screen flex flex-col transition-colors duration-300">
-      <HeroSection />
-      <CompetenceSection />
       <Suspense fallback={<span>Cargando catalogo...</span>}>
         <CatalogSection searchParams={props.searchParams} />
       </Suspense>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { CATEGORIES } from "@/lib/constants";
 
 interface EditProductFormProps {
     product?: {
@@ -12,19 +11,21 @@ interface EditProductFormProps {
     } | null;
     isNew?: boolean;
     onCancel: () => void;
-    onSave: (id: string, data: any) => void;
+    onSave: (id: string, data: any) => Promise<void> | void;
+    categories: { id: number; nombre: string }[];
 }
 
-export const EditProductForm: React.FC<EditProductFormProps> = ({ product, isNew, onCancel, onSave }) => {
+export const EditProductForm: React.FC<EditProductFormProps> = ({ product, isNew, onCancel, onSave, categories }) => {
     const [formData, setFormData] = useState<any>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (product) {
             // Extraer el ID de categoría de forma segura
-            let currentCatId = CATEGORIES[1].id;
+            let currentCatId = categories.length > 1 ? categories[1].id : 0;
             if (typeof product.categoria === 'object' && product.categoria !== null) {
                 currentCatId = (product.categoria as any).id;
             } else if (product.categoria) {
@@ -61,7 +62,7 @@ export const EditProductForm: React.FC<EditProductFormProps> = ({ product, isNew
             if (isNaN(finalValue)) finalValue = 0;
         } else if (id === 'category') {
             finalValue = Number(value);
-            if (isNaN(finalValue)) finalValue = CATEGORIES[1].id;
+            if (isNaN(finalValue)) finalValue = categories.length > 1 ? categories[1].id : 0;
         }
 
         setFormData((prev: any) => ({
@@ -79,8 +80,11 @@ export const EditProductForm: React.FC<EditProductFormProps> = ({ product, isNew
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (isSubmitting) return;
+        setIsSubmitting(true);
 
         // Pass the file along with the form data if it exists
         const submissionData = { ...formData };
@@ -88,7 +92,11 @@ export const EditProductForm: React.FC<EditProductFormProps> = ({ product, isNew
             submissionData.file = selectedFile;
         }
 
-        onSave(product.id || "", submissionData);
+        try {
+            await onSave(product.id || "", submissionData);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -102,18 +110,18 @@ export const EditProductForm: React.FC<EditProductFormProps> = ({ product, isNew
                 <form onSubmit={handleSubmit} className="flex flex-col gap-8 md:flex-row">
                     {/* Vista previa de imagen */}
                     <div className="w-full md:w-1/3 lg:w-1/4">
-                        <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Imagen del Producto</label>
-                        <div className="aspect-square w-full overflow-hidden rounded-lg bg-slate-100 dark:bg-slate-800 border-2 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center relative">
+                        <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Imagen (Vista Previa en Tarjeta)</label>
+                        <div className="relative w-full aspect-4/5 sm:aspect-4/3 lg:aspect-video rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-700 bg-white overflow-hidden flex items-center justify-center group cursor-pointer transition-colors hover:border-primary/50" onClick={() => fileInputRef.current?.click()}>
                             {previewUrl ? (
                                 <img
                                     alt="Vista previa"
-                                    className="h-full w-full object-cover"
+                                    className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:delay-150 group-hover:scale-110 mix-blend-multiply"
                                     src={previewUrl}
                                 />
                             ) : (
-                                <div className="flex flex-col items-center justify-center text-slate-400">
-                                    <span className="material-symbols-outlined text-4xl">image</span>
-                                    <span className="text-[10px] mt-2">Sin imagen</span>
+                                <div className="flex flex-col items-center justify-center text-slate-400 group-hover:text-primary transition-colors">
+                                    <span className="material-symbols-outlined text-4xl">add_photo_alternate</span>
+                                    <span className="text-[10px] mt-2 font-medium">Clic para subir</span>
                                 </div>
                             )}
                         </div>
@@ -155,7 +163,7 @@ export const EditProductForm: React.FC<EditProductFormProps> = ({ product, isNew
                                     value={formData.categoria}
                                     onChange={handleChange}
                                 >
-                                    {CATEGORIES.filter(c => c.id !== 0).map(cat => (
+                                    {categories.filter(c => c.id !== 0).map(cat => (
                                         <option key={cat.id} value={cat.id}>{cat.nombre}</option>
                                     ))}
                                 </select>
@@ -193,10 +201,16 @@ export const EditProductForm: React.FC<EditProductFormProps> = ({ product, isNew
                                 Cancelar
                             </button>
                             <button
-                                className="rounded-lg bg-[#3994ef] px-6 py-2 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#3994ef]/90 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3994ef]"
+                                className="rounded-lg bg-[#3994ef] px-6 py-2 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#3994ef]/90 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3994ef] disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-[#3994ef] disabled:hover:shadow-md flex items-center justify-center gap-2"
                                 type="submit"
+                                disabled={isSubmitting}
                             >
-                                {isNew ? "Crear Producto" : "Guardar Cambios"}
+                                {isSubmitting && (
+                                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                                )}
+                                {isSubmitting
+                                    ? (isNew ? "Creando..." : "Guardando...")
+                                    : (isNew ? "Crear Producto" : "Guardar Cambios")}
                             </button>
                         </div>
                     </div>

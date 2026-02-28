@@ -34,6 +34,24 @@ export const getProducts = async (category?: number, page: number = 1, searchTer
     };
 }
 
+export const getCategorias = async () => {
+    'use cache'
+    cacheTag('categories-tag')
+
+    const { data: categorias, error } = await supabase
+        .from('categoria')
+        .select('id, nombre')
+        .order('nombre', { ascending: true });
+
+    if (error) throw new Error('Error al cargar categorias');
+
+    // Siempre agregamos la categoría "Todo" con ID 0 para la navegación
+    const categoriasConTodo = [{ id: 0, nombre: "Todo" }, ...(categorias || [])];
+
+    return {
+        data: categoriasConTodo
+    };
+}
 
 
 export default getProducts
