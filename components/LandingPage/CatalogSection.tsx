@@ -26,7 +26,6 @@ const CatalogSection = async ({ searchParams }: CatalogSectionProps) => {
 
     const { data: Products, totalPages, count } = await fetchCatalog(catId, page, query);
     const { data: categories } = await getCategorias();
-    console.log("ACA", totalPages)
     return (
         <Suspense fallback={<div>Cargando productos...</div>}>
             <Aside categories={categories}>

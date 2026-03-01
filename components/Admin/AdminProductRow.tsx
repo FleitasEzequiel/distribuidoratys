@@ -25,7 +25,7 @@ export const AdminProductRow: React.FC<AdminProductRowProps> = ({ product, onEdi
                         width={48}
                         height={48}
                         className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                        src={product.imagen || `https://xjbifzftvlakgoyrnxrz.supabase.co/storage/v1/object/public/Distribuidora%20TyS/${product.id}.png`}
+                        src={product.imagen || `https://xjbifzftvlakgoyrnxrz.supabase.co/storage/v1/object/public/Distribuidora%20TyS/${product.id}.jpg`}
                     />
                 </div>
             </td>

@@ -32,77 +32,98 @@ async function uploadImage(file: File, id: string) {
 }
 
 export async function editarProducto(id: string, formData: FormData) {
-    const nuevosDatos: any = {
-        nombre: formData.get('nombre'),
-        categoria_id: Number(formData.get('categoria')),
-        precio: parseFloat(formData.get('precio') as string),
-        descripcion: formData.get('descripcion'),
-
-    };
-
-    const file = formData.get('file') as File | null;
-    if (file && file.size > 0) {
-        const imageUrl = await uploadImage(file, id);
-        if (imageUrl) {
-            // nuevosDatos.imagen = imageUrl;
+    try {
+        const file = formData.get('file') as File | null;
+        if (file && file.size > 600 * 1024) {
+            return { success: false, message: "La imagen es demasiado grande. El tamaño máximo permitido es 600KB." };
         }
+
+        const nuevosDatos: any = {
+            nombre: formData.get('nombre'),
+            categoria_id: Number(formData.get('categoria')),
+            precio: parseFloat(formData.get('precio') as string),
+            descripcion: formData.get('descripcion'),
+        };
+
+        if (file && file.size > 0) {
+            const imageUrl = await uploadImage(file, id);
+            if (imageUrl) {
+                // nuevosDatos.imagen = imageUrl;
+            } else {
+                return { success: false, message: "Hubo un error al procesar la imagen en el servidor." };
+            }
+        }
+
+        const { error } = await supabase
+            .from('productos')
+            .update(nuevosDatos)
+            .eq('id', id);
+
+        if (error) return { success: false, message: error.message };
+
+        updateTag('products-tag');
+        return { success: true };
+    } catch (error: any) {
+        console.error("Error en editarProducto:", error);
+        return { success: false, message: error.message || "Error inesperado o fallo de conexión al servidor." };
     }
-
-    const { error } = await supabase
-        .from('productos')
-        .update(nuevosDatos)
-        .eq('id', id);
-
-    console.log("debug", error)
-    if (error) return { success: false };
-
-    updateTag('products-tag');
-    return { success: true };
 }
 
 export async function crearProducto(formData: FormData) {
-    // We need an ID first to name the image file
-    // So we create the product first, then update it if there's an image
-    // OR we generate a UUID here if 'productos' table doesn't do it automatically
-
-    const initialData: any = {
-        nombre: formData.get('nombre'),
-        categoria_id: Number(formData.get('categoria')),
-        precio: parseFloat(formData.get('precio') as string),
-        descripcion: formData.get('descripcion'),
-    };
-
-    const { data, error } = await supabase
-        .from('productos')
-        .insert([initialData])
-        .select();
-
-    if (error || !data) return { success: false };
-
-    const newProduct = data[0];
-    const file = formData.get('file') as File | null;
-
-    if (file && file.size > 0) {
-        const imageUrl = await uploadImage(file, newProduct.id);
-        if (imageUrl) {
-            await supabase
-                .from('productos')
-                .update({ imagen: imageUrl })
-                .eq('id', newProduct.id);
+    try {
+        const file = formData.get('file') as File | null;
+        if (file && file.size > 600 * 1024) {
+            return { success: false, message: "La imagen es demasiado grande. El tamaño máximo permitido es 600KB." };
         }
-    }
 
-    updateTag('products-tag');
-    return { success: true, data: newProduct };
+        const initialData: any = {
+            nombre: formData.get('nombre'),
+            categoria_id: Number(formData.get('categoria')),
+            precio: parseFloat(formData.get('precio') as string),
+            descripcion: formData.get('descripcion'),
+        };
+
+        const { data, error } = await supabase
+            .from('productos')
+            .insert([initialData])
+            .select();
+
+        if (error || !data) return { success: false, message: error?.message || "Ocurrió un error al registrar el producto." };
+
+        const newProduct = data[0];
+
+        if (file && file.size > 0) {
+            const imageUrl = await uploadImage(file, newProduct.id);
+            if (imageUrl) {
+                await supabase
+                    .from('productos')
+                    .update({ imagen: imageUrl })
+                    .eq('id', newProduct.id);
+            } else {
+                return { success: false, message: "El producto se creó, pero la imagen falló al subirse." };
+            }
+        }
+
+        updateTag('products-tag');
+        return { success: true, data: newProduct };
+    } catch (error: any) {
+        console.error("Error en crearProducto:", error);
+        return { success: false, message: error.message || "Error inesperado o fallo de conexión al servidor." };
+    }
 }
 
 export async function eliminarProducto(id: string) {
-    const { error } = await supabase
-        .from('productos')
-        .delete()
-        .eq('id', id);
+    try {
+        const { error } = await supabase
+            .from('productos')
+            .delete()
+            .eq('id', id);
 
-    if (error) return { success: false };
-    updateTag('products-tag');
-    return { success: true };
+        if (error) return { success: false, message: error.message };
+        updateTag('products-tag');
+        return { success: true };
+    } catch (error: any) {
+        console.error("Error en eliminarProducto:", error);
+        return { success: false, message: error.message || "Error inesperado al intentar eliminar el producto." };
+    }
 }

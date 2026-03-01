@@ -28,7 +28,6 @@ export default function ProductCard({
     const isAdded = !!cartItem;
 
 
-    console.log("leer acá", DBLINK)
     const badgeClasses =
         badgeType === 'best-seller'
             ? "bg-primary text-slate-900 shadow-sm"
